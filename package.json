@@ -1,0 +1,21 @@
+{
+  "name": "sdksigner",
+  "version": "1.0.0",
+  "description": "JD openapi sdk 签名算法",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "debug": "^4.1.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "JDCLOUD",
+  "license": "ISC"
+}
