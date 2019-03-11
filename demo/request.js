@@ -1,5 +1,5 @@
 const {Signer,Context}=require('../src')
-let ctx=new Context('192.168.180.18','/v1/regions/cn-north-1/buckets','GET')
+let ctx=new Context('192.168.180.18','/v1/regions/cn-north-1/buckets','GET',null,'oss')
 ctx.regionId='cn-north-1'
 ctx.query=ctx.buildQuery({a:1})
 ctx.headers.set('content-type','application/json')
@@ -10,8 +10,8 @@ let credentials= {
     secretAccessKey: '7989C15CB8705962B860A2BB5BA3FC40'
 }
 
-let signer=new Signer(ctx,'oss')
-let auth= signer.sign(credentials,new Date())
+let signer=new Signer(ctx,credentials)
+let auth= signer.sign(new Date())
 ctx.headers.set('Authorization',auth)
 console.log("GET签名为：",auth)
 
@@ -20,6 +20,6 @@ console.log('------------------------')
 ctx.query=null
 ctx.body=JSON.stringify({a:1,b:2})
 ctx.method='POST'
-signer=new Signer(ctx,'oss')
-auth= signer.sign(credentials,new Date())
+signer=new Signer(ctx,credentials)
+auth= signer.sign(new Date())
 console.log("POST签名为：",auth)

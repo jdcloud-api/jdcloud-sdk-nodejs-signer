@@ -1,8 +1,8 @@
 {
-  "name": "sdksigner",
-  "version": "1.0.0",
+  "name": "@jdcloud/sdksigner",
+  "version": "1.1.0",
   "description": "JD openapi sdk 签名算法",
-  "main": "index.js",
+  "main": "src/index.js",
   "directories": {
     "test": "test"
   },
@@ -19,8 +19,12 @@
   },
   "scripts": {
     "lint": "eslint . --ext .js.vue --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --recursive"
   },
-  "author": "JDCLOUD",
-  "license": "ISC"
+  "author": "chenjingnan@jd.com",
+  "license": "Apache",
+  "engines": {
+    "node": ">= 8.6.0",
+    "npm": ">= 5.6.0"
+  }
 }

@@ -18,7 +18,7 @@ var v2Credentials = require('./v2_credentials')
 
 
 module.exports = class SignerV2  {
-    constructor (request, serviceName,logger=console.log) {
+    constructor (request,credentials,logger=console.log) {
 
         this.signatureCache = true
         this.algorithm = 'JDCLOUD2-HMAC-SHA256'
@@ -40,28 +40,31 @@ module.exports = class SignerV2  {
         this.headers=request.headers
         this.serviceName =request.serviceName
         this.logger=logger
+        this.credentials=credentials
         // this.signatureCache = typeof options.signatureCache === 'boolean' ? options.signatureCache : true;
     }
 
 
-    addAuthorization (credentials, date) {
+    addAuthorization (date) {
         // var datetime = '20180119T070300Z';
+        this.request.check()
         var datetime = util.date.iso8601(date).replace(/[:-]|\.\d{3}/g, '')
-        this.addHeaders(credentials, datetime)
+        this.addHeaders(this.credentials, datetime)
 
         if (!this.headers.get('x-jdcloud-oauth2-token')) {
             this.headers.set(
                 'Authorization',
-                this.authorization(credentials, datetime)
+                this.authorization(this.credentials, datetime)
             )
         }
     }
 
-    sign(credentials,date)
+    sign(date)
     {
+        this.request.check()
         var datetime = util.date.iso8601(date).replace(/[:-]|\.\d{3}/g, '')
-        this.addHeaders(credentials, datetime)
-        return this.authorization(credentials, datetime)
+        this.addHeaders(this.credentials, datetime)
+        return this.authorization(this.credentials, datetime)
     }
 
     addHeaders (credentials, datetime) {

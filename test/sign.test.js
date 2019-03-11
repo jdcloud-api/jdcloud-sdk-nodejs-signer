@@ -20,21 +20,21 @@ describe('signer', function () {
 
 
   it('简单签名', function () {
-      let signer=new Signer(ctx)
-      signer.addAuthorization(credentials,new Date('2019-03-08T10:49:29Z'))
+      let signer=new Signer(ctx,credentials)
+      signer.addAuthorization(new Date('2019-03-08T10:49:29Z'))
       expec(ctx.headers.get('Authorization')).to.be.ok
   })
 
   it('without serviceName',function () {
-      let signer=new Signer(ctx)
-      signer.addAuthorization(credentials,new Date('2019-03-08T10:49:29Z'))
+      let signer=new Signer(ctx,credentials)
+      signer.addAuthorization(new Date('2019-03-08T10:49:29Z'))
       expec(ctx.headers.get('Authorization')).to.be.ok
   })
 
     it('without region',function () {
         ctx.regionId=''
-        let signer=new Signer(ctx)
-        signer.addAuthorization(credentials,new Date('2019-03-08T10:49:29Z'))
+      let signer=new Signer(ctx,credentials)
+        signer.addAuthorization(new Date('2019-03-08T10:49:29Z'))
         expec(ctx.headers.get('Authorization')).to.be.ok
     })
 })
