@@ -7,13 +7,18 @@
     "test": "test"
   },
   "dependencies": {
-    "debug": "^4.1.1"
+    "debug": "^4.1.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.0.2"
+    "mocha": "^6.0.2",
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-standard": "^11.0.0"
   },
   "scripts": {
+    "lint": "eslint . --ext .js.vue --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "JDCLOUD",
