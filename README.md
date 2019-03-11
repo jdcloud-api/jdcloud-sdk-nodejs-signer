@@ -1,7 +1,7 @@
 ---
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 # 京东云Node SDK
-欢迎使用京东云API网关开发者Node工具套件（Node Signature SDK）。使用京东云API网关Node Signature SDK，您无需复杂编程就可以访问京东云API网关API提供者提供的各种服务。
+欢迎使用京东云API网关开发者Node工具套件（Nodejs Signature SDK）。使用京东云API网关Node Signature SDK，您无需复杂编程就可以访问京东云API网关API提供者提供的各种服务。
 为了方便您理解SDK中的一些概念和参数的含义，使用SDK前建议您先查看京东云API网关使用入门。
 ### 安装
 `npm install @jdcloud/sdksigner`
