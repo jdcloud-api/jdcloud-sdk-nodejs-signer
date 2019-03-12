@@ -1,6 +1,6 @@
 {
   "name": "@jdcloud/sdksigner",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "JD openapi sdk 签名算法",
   "main": "src/index.js",
   "types": "types/index.d.ts",

@@ -4,7 +4,7 @@ const uuid=require('uuid')
 const NOUNCEHEADER='x-jdcloud-nonce'
 
 class Context {
-    constructor(host,path,method,headers,serviceName='')
+    constructor(host,path,method,headers,serviceName='',regionId='')
     {
         if(!host)
             throw new Error("host is required")
@@ -17,6 +17,7 @@ class Context {
         this.method=method
         this.path=util.uriEscapePath(path)
         this.serviceName=serviceName
+        this.regionId=regionId
     }
 
     buildNonce()

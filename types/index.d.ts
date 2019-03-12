@@ -1,5 +1,5 @@
 export declare class Context {
-  constructor(host:string,path:string,method:string,headers:Map,serviceName:string='')
+  constructor(host:string,path:string,method:string,headers:Map,serviceName:string='',regionId:string='')
   buildNonce():void
   setNonce(nonce:string):void
   check():void
