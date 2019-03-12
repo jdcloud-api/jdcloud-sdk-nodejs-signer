@@ -33,6 +33,8 @@ class Context {
     {
         if(!this.headers.get(NOUNCEHEADER))
             throw new Error("header['x-jdcloud-nonce'] is required")
+        if(!this.regionId)
+            throw new Error("regionId is required")
     }
 
     buildQuery (queryParams) {
