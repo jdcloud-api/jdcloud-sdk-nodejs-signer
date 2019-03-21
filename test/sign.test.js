@@ -59,7 +59,7 @@ describe('签名比对', function () {
     let signer=new Signer(ctx,credentials)
     signer.setSignableHeaders(['x-jdcloud-date','x-jdcloud-nonce','x-my-header','x-my-header_blank'])
     signer.addAuthorization(new Date('2019-02-14T10:45:14Z'))
-    expec(ctx.headers.get('Authorization')).to.be.ok
+    expec(ctx.headers.get('Authorization')).to.equal('JDCLOUD2-HMAC-SHA256 Credential=TESTAK/20190214/cn-north-1/test/jdcloud2_request, SignedHeaders=x-jdcloud-date;x-jdcloud-nonce;x-my-header;x-my-header_blank, Signature=2a98f83c074e7bee260bfc8ef64f009c07595bd93f7f0c3f4e156bf6479ed9bf')
   })
 
 })
