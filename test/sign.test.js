@@ -38,3 +38,28 @@ describe('signer', function () {
         expec(ctx.headers.get('Authorization')).to.be.ok
     })
 })
+
+describe('签名比对', function () {
+
+  let credentials= {
+    accessKeyId: 'TESTAK',
+    secretAccessKey: 'TESTSK'
+  }
+
+  let ctx=new Context('test.jdcloud-api.com','/v1/resource:action','POST',null,'test')
+  ctx.regionId='cn-north-1'
+  ctx.query=ctx.buildQuery({p1:'p1',u:'u',o:'%',p0:'p0'})
+  ctx.headers.set('content-type','application/json')
+  ctx.headers.set('x-my-header','test  ')
+  ctx.headers.set('x-my-header_blank','  blank')
+  ctx.setNonce('testnonce')
+  ctx.body='body data'
+
+  it('简单签名', function () {
+    let signer=new Signer(ctx,credentials)
+    signer.setSignableHeaders(['x-jdcloud-date','x-jdcloud-nonce','x-my-header','x-my-header_blank'])
+    signer.addAuthorization(new Date('2019-02-14T10:45:14Z'))
+    expec(ctx.headers.get('Authorization')).to.be.ok
+  })
+
+})

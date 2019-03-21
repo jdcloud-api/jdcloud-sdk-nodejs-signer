@@ -16,16 +16,23 @@
     "mocha": "^6.0.2",
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
-    "eslint-config-standard": "^11.0.0"
+    "eslint-config-standard": "^11.0.0",
+    "cz-conventional-changelog": "^2.1.0"
   },
   "scripts": {
     "lint": "eslint . --ext .js.vue --fix",
-    "test": "mocha --recursive"
+    "test": "mocha --recursive",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG1.md -w -r 0"
   },
   "author": "chenjingnan@jd.com",
   "license": "Apache",
   "engines": {
     "node": ">= 8.6.0",
     "npm": ">= 5.6.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

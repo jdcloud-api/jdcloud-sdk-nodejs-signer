@@ -44,7 +44,17 @@ module.exports = class SignerV2  {
         // this.signatureCache = typeof options.signatureCache === 'boolean' ? options.signatureCache : true;
     }
 
-
+    setSignableHeaders(signableHeaders)
+    {
+      let headers=['x-jdcloud-nonce']
+      if(this.headers.has('x-jdcloud-security-token'))
+        headers.push('x-jdcloud-security-token')
+      for(let header of signableHeaders)
+      {
+        headers.push(header)
+      }
+      this.signableHeaders=[...new Set(headers)]
+    }
     addAuthorization (date) {
         // var datetime = '20180119T070300Z';
         this.request.check()

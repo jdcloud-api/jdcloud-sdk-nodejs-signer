@@ -40,7 +40,7 @@ class Context {
 
     buildQuery (queryParams) {
         var queryParamsWithoutEmptyItem = {}
-        var keys = Object.keys(queryParams)
+        var keys = Object.keys(queryParams).sort()
         for (let key of keys) {
             if (queryParams[key] !== undefined) {
                 queryParamsWithoutEmptyItem[key] = queryParams[key]
