@@ -8,7 +8,7 @@
 
 ### 使用说明
 1. 安装后，引入 const {Signer,Context}=require('@jdcloud/sdksigner')
-2. 设置请求上下文Context，如host,path,method,headers,serviceName(默认为'')。具体参见构造函数，
+2. 设置请求上下文Context，如host,path,method,headers,serviceName(默认为'')。具体参见构造函数，其中header必须包含：x-jdcloud-nonce、x-jdcloud-date(格式：20190101T010101Z)、content-type
 3. 初始化Signer，设置ak/sk和logger(默认为console),执行方法得到签名并放到header中
 
 
