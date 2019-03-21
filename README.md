@@ -27,6 +27,12 @@ let credentials= {
 }
 
 let signer=new Signer(ctx,credentials)
+signer.setSignableHeaders([
+  'content-type',
+  'host',
+  'x-jdcloud-date',
+  'x-jdcloud-nonce'
+])
 let auth= signer.sign(new Date())
 ctx.headers.set('Authorization',auth)
 console.log("GET签名为：",auth)
