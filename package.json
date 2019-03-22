@@ -1,6 +1,6 @@
 {
-  "name": "@jdcloud/sdksigner",
-  "version": "1.1.6",
+  "name": "jdcloud-sdk-signer",
+  "version": "1.0.0",
   "description": "JD openapi sdk 签名算法",
   "main": "src/index.js",
   "types": "types/index.d.ts",
@@ -26,6 +26,10 @@
   },
   "author": "chenjingnan@jd.com",
   "license": "Apache",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jdcloud-api/jdcloud-sdk-nodejs-signer"
+  },
   "engines": {
     "node": ">= 8.6.0",
     "npm": ">= 5.6.0"

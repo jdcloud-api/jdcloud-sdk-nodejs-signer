@@ -1,29 +1,43 @@
 ---
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-# 京东云Node SDK
-欢迎使用京东云API网关开发者Node工具套件（Nodejs Signature SDK）。使用京东云API网关Node Signature SDK，您无需复杂编程就可以访问京东云API网关API提供者提供的各种服务。
-为了方便您理解SDK中的一些概念和参数的含义，使用SDK前建议您先查看京东云API网关使用入门。
-### 安装
-`npm install @jdcloud/sdksigner`
+# 简介 #
+  该项目实现京东云API网关签名的生成，适用于API网关产品，也可用于OpenAPI的签名生成。
+# 环境准备 #
+ 1.京东云Node.js SDK适用于Node.js 8.6.0及以上，npm 5.6.0及以上。
 
-### 使用说明
-1. 安装后，引入 const {Signer,Context}=require('@jdcloud/sdksigner')
-2. 设置请求上下文Context，如host,path,method,headers,serviceName(默认为'')。具体参见构造函数，其中header必须包含：x-jdcloud-nonce、x-jdcloud-date(格式：20190101T010101Z)、content-type
-3. 初始化Signer，设置ak/sk和logger(默认为console),执行方法得到签名并放到header中
+ 2.在开始调用京东云open API之前，需提前在京东云用户中心账户管理下的[AccessKey管理页面](https://uc.jdcloud.com/accesskey/index)申请accesskey和secretKey密钥对（简称AK/SK）。AK/SK信息请妥善保管，如果遗失可能会造成非法用户使用此信息操作您在云上的资源，给你造成数据和财产损失。
+
+# SDK使用方法 #
+建议使用npm安装京东云Node.js SDK，如下所示： 
+
+npm install jdcloud-sdk-signer
+
+ 
+
+您还可以下载sdk源代码自行使用。
+
+ 
+
+SDK使用中的任何问题，欢迎您在Github SDK使用问题反馈页面交流。
 
 
-###例子如下：
+
+注意：京东云并没有提供其他下载方式，请务必使用上述官方下载方式！ 
+
+
+
+## 调用示例 ##
 ```javascript
 const {Signer,Context}=require('../src')
-let ctx=new Context('192.168.180.18','/v1/regions/cn-north-1/buckets','GET',null,'oss')
+let ctx=new Context('192.168.180.18','/v1/regions/cn-north-1/buckets','GET',null,'oss')  //可直接讲req.headers 传入
 ctx.regionId='cn-north-1'
 ctx.query=ctx.buildQuery({a:1})
 ctx.headers.set('content-type','application/json')
 ctx.buildNonce()
 
 let credentials= {
-    accessKeyId : '0449DD5411F3EAED92335DC5EDAFEAFF',
-    secretAccessKey: '7989C15CB8705962B860A2BB5BA3FC40'
+    accessKeyId : 'accessKeyId',
+    secretAccessKey: 'secretAccessKey'
 }
 
 let signer=new Signer(ctx,credentials)
@@ -46,3 +60,9 @@ signer=new Signer(ctx,credentials)
 auth= signer.sign(new Date())
 console.log("POST签名为：",auth)
 ```
+## 注意事项 ##
+1. 设置请求上下文Context(仅作请求签名的载体，不发请求)，如host,path,method,headers,serviceName(默认为'')，具体参见构造函数(ts 定义)。其中header必须包含：x-jdcloud-nonce、x-jdcloud-date(格式：20190101T010101Z)、content-type。
+1. query需要调用buildQuery 方法处理
+1. 初始化Signer，设置ak/sk和logger(默认为console),执行方法得到签名 
+1. 默认的签名header为['content-type','host','x-jdcloud-date','x-jdcloud-nonce']，可以通过setSignableHeaders 方法重新设置。
+
