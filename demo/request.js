@@ -1,5 +1,6 @@
 const {Signer,Context}=require('../src')
 let ctx=new Context('192.168.180.18','/v1/regions/cn-north-1/buckets','GET',null,'oss')
+
 ctx.regionId='cn-north-1'
 ctx.query=ctx.buildQuery({a:1})
 ctx.headers.set('content-type','application/json')
@@ -17,6 +18,7 @@ signer.setSignableHeaders([
   'x-jdcloud-date',
   'x-jdcloud-nonce'
 ])
+console.log(signer.canonicalHeaders())
 let auth= signer.sign(new Date())
 ctx.headers.set('Authorization',auth)
 console.log("GET签名为：",auth)

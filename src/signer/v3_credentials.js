@@ -1,9 +1,10 @@
 var cachedSecret = {}
 var cacheQueue = []
 var maxCacheEntries = 50
-var v2Identifier = 'jdcloud2_request'
-
-var util = require('../util')
+var IDENTIFIER = 'jdcloud3_request'
+const {VERSION}=require('./const')
+const util = require('../util')
+const debug = require('debug')('signer')
 
 module.exports = {
   /**
@@ -15,7 +16,7 @@ module.exports = {
    * @return [String]
    */
   createScope: function createScope (date, region, serviceName) {
-    return [date.substr(0, 8), region, serviceName, v2Identifier].join('/')
+    return [date.substr(0, 8), region, serviceName, IDENTIFIER].join('/')
   },
 
   /**
@@ -45,16 +46,15 @@ module.exports = {
     if (shouldCache && cacheKey in cachedSecret) {
       return cachedSecret[cacheKey]
     }
-
+    let digest='buffer'
+   // digest=null
     var kDate = util.crypto.hmac(
-      'JDCLOUD2' + credentials.secretAccessKey,
-      date,
-      'buffer'
+      VERSION + credentials.secretAccessKey,
+      date,digest
     )
-    var kRegion = util.crypto.hmac(kDate, region, 'buffer')
-    var kService = util.crypto.hmac(kRegion, service, 'buffer')
-
-    var signingKey = util.crypto.hmac(kService, v2Identifier, 'buffer')
+    var kRegion = util.crypto.hmac(kDate, region,digest)
+    var kService = util.crypto.hmac(kRegion, service,digest)
+    var signingKey = util.crypto.hmac(kService, IDENTIFIER)
     if (shouldCache) {
       cachedSecret[cacheKey] = signingKey
       cacheQueue.push(cacheKey)
@@ -63,7 +63,10 @@ module.exports = {
         delete cachedSecret[cacheQueue.shift()]
       }
     }
-
+    debug('kDate',kDate.toString('hex'))
+    debug('kRegion',kRegion.toString('hex'))
+    debug('kService',kService.toString('hex'))
+    debug('kSigning',signingKey.toString('hex'))
     return signingKey
   },
 

@@ -14,21 +14,15 @@
 // This signer is modified from AWS V4 signer algorithm.
 
 var util = require('../util')
-var v2Credentials = require('./v2_credentials')
-
-
-module.exports = class SignerV2  {
+var v3Credentials = require('./v3_credentials')
+const {VERSION}=require('./const')
+const debug = require('debug')('signer')
+module.exports = class Signer  {
     constructor (request,credentials,logger=console.log) {
 
         this.signatureCache = true
-        this.algorithm = 'JDCLOUD2-HMAC-SHA256'
-        this.unsignableHeaders = [
-            'authorization',
-            'user-agent',
-            'x-jdcloud-id',
-            'x-jcloud-id',
-            'x-jdcloud-content-sha256'
-        ]
+        this.algorithm = `${VERSION}-HMAC-SHA256`
+
         this.signableHeaders = [
             'content-type',
             'host',
@@ -41,14 +35,17 @@ module.exports = class SignerV2  {
         this.serviceName =request.serviceName
         this.logger=logger
         this.credentials=credentials
-        // this.signatureCache = typeof options.signatureCache === 'boolean' ? options.signatureCache : true;
     }
 
     setSignableHeaders(signableHeaders)
     {
       let headers=['x-jdcloud-nonce']
-      if(this.headers.has('x-jdcloud-security-token'))
-        headers.push('x-jdcloud-security-token')
+      let securityToken='x-jdcloud-security-token'
+      let sessionToken ='x-jdcloud-session-token'
+      if(this.headers.has(securityToken))
+        headers.push(securityToken)
+      if(this.headers.has(sessionToken))
+        headers.push(sessionToken)
       for(let header of signableHeaders)
       {
         headers.push(header)
@@ -56,7 +53,7 @@ module.exports = class SignerV2  {
       this.signableHeaders=[...new Set(headers)]
     }
     addAuthorization (date) {
-        // var datetime = '20180119T070300Z';
+
         this.request.check()
         var datetime = util.date.iso8601(date).replace(/[:-]|\.\d{3}/g, '')
         this.addHeaders(this.credentials, datetime)
@@ -98,7 +95,7 @@ module.exports = class SignerV2  {
     }
 
     credentialString (datetime) {
-        return v2Credentials.createScope(
+        return v3Credentials.createScope(
             datetime.substr(0, 8),
             this.request.regionId,
             this.serviceName
@@ -106,14 +103,16 @@ module.exports = class SignerV2  {
     }
 
     signature (credentials, datetime) {
-        var signingKey = v2Credentials.getSigningKey(
+        var signingKey = v3Credentials.getSigningKey(
             credentials,
             datetime.substr(0, 8),
             this.request.regionId,
             this.serviceName,
             this.signatureCache
         )
-        return util.crypto.hmac(signingKey, this.stringToSign(datetime), 'hex')
+        let signResult= util.crypto.hmac(signingKey, this.stringToSign(datetime), 'hex')
+        debug('signResult',signResult)
+        return signResult
     }
 
     stringToSign (datetime) {
@@ -129,7 +128,7 @@ module.exports = class SignerV2  {
     // 构建标准签名字符串
     canonicalString () {
         var parts = []
-        var pathname = this.request.path
+        var pathname =util.uriEscapePath(this.request.pathName)
         parts.push(this.request.method)
         parts.push(pathname)
         parts.push(this.request.query)
@@ -175,7 +174,7 @@ module.exports = class SignerV2  {
     }
 
     canonicalHeaderValues (values) {
-        return values.replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '')
+        return values.replace(/^\s+|\s+$/g, '')
     }
 
     authorization (credentials, datetime) {
@@ -203,14 +202,6 @@ module.exports = class SignerV2  {
             this.headers.get('x-jdcloud-content-sha256') ||
             this.hexEncodedHash(this.request.body || '')
         )
-        /* var request = this.request;
-            if (this.isPresigned() && this.serviceName === 's3' && !request.body) {
-                return 'UNSIGNED-PAYLOAD';
-            } else if (request.headers['X-Amz-Content-Sha256']) {
-                return request.headers['X-Amz-Content-Sha256'];
-            } else {
-                return this.hexEncodedHash(this.request.body || '');
-            } */
     }
 
     isSignableHeader (key) {

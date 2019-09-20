@@ -12,12 +12,20 @@ class Context {
             throw new Error("path is required")
         if(!method)
             throw new Error("method is required")
+        if(!path.startsWith('/'))
+          path='/'+path
         this.host=host
         this.headers=headers||new Map()
         this.method=method
-        this.path=util.uriEscapePath(path)
+        this.path=path
         this.serviceName=serviceName
         this.regionId=regionId
+    }
+
+    get pathName()
+    {
+        let path=decodeURIComponent(this.path)
+        return path.replace(/(\/{2,})/g,'/')
     }
 
     buildNonce()

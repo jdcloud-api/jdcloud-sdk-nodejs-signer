@@ -352,7 +352,7 @@ var util = {
       var crc = 0 ^ -1
 
       if (typeof data === 'string') {
-        data = new util.Buffer(data)
+        data =  util.Buffer.from(data)
       }
 
       for (var i = 0; i < data.length; i++) {
@@ -368,7 +368,7 @@ var util = {
         digest = undefined
       }
       if (!fn) fn = 'sha256'
-      if (typeof string === 'string') string = new util.Buffer(string)
+      if (typeof string === 'string') string =  util.Buffer.from(string)
       return util.crypto.lib
         .createHmac(fn, key)
         .update(string)
@@ -391,7 +391,7 @@ var util = {
       if (digest === 'buffer') {
         digest = undefined
       }
-      if (typeof data === 'string') data = new util.Buffer(data)
+      if (typeof data === 'string') data =  util.Buffer.from(data)
       var sliceFn = util.arraySliceFn(data)
       var isBuffer = util.Buffer.isBuffer(data)
       // Identifying objects with an ArrayBuffer as buffers
@@ -433,7 +433,7 @@ var util = {
           callback(new Error('Failed to read data.'))
         }
         reader.onload = function () {
-          var buf = new util.Buffer(new Uint8Array(reader.result))
+          var buf =  util.Buffer.from(new Uint8Array(reader.result))
           hash.update(buf)
           index += buf.length
           reader._continueReading()
@@ -452,7 +452,7 @@ var util = {
         reader._continueReading()
       } else {
         if (util.isBrowser() && typeof data === 'object' && !isBuffer) {
-          data = new util.Buffer(new Uint8Array(data))
+          data = util.Buffer.from(new Uint8Array(data))
         }
         var out = hash.update(data).digest(digest)
         if (callback) callback(null, out)
