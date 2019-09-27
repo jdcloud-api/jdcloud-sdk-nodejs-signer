@@ -3,7 +3,8 @@ let ctx=new Context('192.168.180.18','/v1/regions/cn-north-1/buckets','GET',null
 
 ctx.regionId='cn-north-1'
 ctx.query=ctx.buildQuery({a:1})
-ctx.headers.set('content-type','application/json')
+
+ctx.headers['content-type']='application/json'
 ctx.buildNonce()
 
 let credentials= {
@@ -20,7 +21,8 @@ signer.setSignableHeaders([
 ])
 console.log(signer.canonicalHeaders())
 let auth= signer.sign(new Date())
-ctx.headers.set('Authorization',auth)
+
+ctx.headers['Authorization']=auth
 console.log("GET签名为：",auth)
 
 console.log('------------------------')

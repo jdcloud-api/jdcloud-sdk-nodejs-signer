@@ -1,6 +1,6 @@
 const util = require('./util')
 const uuid=require('uuid')
-
+const type=require('type-detect')
 const NOUNCEHEADER='x-jdcloud-nonce'
 
 class Context {
@@ -12,10 +12,11 @@ class Context {
             throw new Error("path is required")
         if(!method)
             throw new Error("method is required")
+
         if(!path.startsWith('/'))
           path='/'+path
         this.host=host
-        this.headers=headers||new Map()
+        this.headers=headers||{}
         this.method=method
         this.path=path
         this.serviceName=serviceName
@@ -24,24 +25,26 @@ class Context {
 
     get pathName()
     {
-        let path=decodeURIComponent(this.path)
+
+        let path=this.path.replace(/\+/g," ")
+        path=unescape(path)
         return path.replace(/(\/{2,})/g,'/')
     }
 
     buildNonce()
     {
-       this.headers.set(NOUNCEHEADER,uuid.v4())
+      this.headers[NOUNCEHEADER]=uuid.v4()
     }
 
     setNonce(nonce)
     {
-        this.headers.set(NOUNCEHEADER,nonce)
+      this.headers[NOUNCEHEADER]=nonce
     }
 
     check()
     {
-        if(!this.headers.get(NOUNCEHEADER))
-            throw new Error("header['x-jdcloud-nonce'] is required")
+        if(!Object.keys(this.headers).find(d=>d.toLowerCase()===NOUNCEHEADER))
+          throw new Error("header['x-jdcloud-nonce'] is required")
         if(!this.regionId)
             throw new Error("regionId is required")
     }
@@ -50,12 +53,13 @@ class Context {
         var queryParamsWithoutEmptyItem = {}
         var keys = Object.keys(queryParams)
         for (let key of keys) {
-            if (queryParams[key] !== undefined) {
+            if (key !== undefined&&key!=='') {
                 queryParamsWithoutEmptyItem[key] = queryParams[key]
             }
         }
         return util.queryParamsToString(queryParamsWithoutEmptyItem)
     }
 }
+
 
 module.exports=Context

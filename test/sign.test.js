@@ -19,27 +19,29 @@ describe('signer', function () {
     let ctx=new Context(urlInfo.hostname,urlInfo.pathname,'POST',null,'test')
     ctx.regionId='cn-north-1'
     ctx.query= urlInfo.query
-    ctx.headers.set('x-my-header','test')
-    ctx.headers.set('x-my-header_blank','  blank')
-    ctx.headers.set('x-jdcloud-nonce','testnonce')
+    ctx.headers={
+      'x-my-header':'test',
+      'x-my-header_blank':'  blank',
+      'x-jdcloud-nonce':'testnonce'
+    }
 
 
   it('简单签名', function () {
       let signer=new Signer(ctx,credentials)
       signer.addAuthorization(new Date('2019-03-08T10:49:29Z'))
-      expec(ctx.headers.get('Authorization')).to.be.ok
+      expec(ctx.headers['Authorization']).to.be.ok
   })
 
   it('without serviceName',function () {
       let signer=new Signer(ctx,credentials)
       signer.addAuthorization(new Date('2019-03-08T10:49:29Z'))
-      expec(ctx.headers.get('Authorization')).to.be.ok
+    expec(ctx.headers['Authorization']).to.be.ok
   })
 
     it('without region',function () {
       let signer=new Signer(ctx,credentials)
         signer.addAuthorization(new Date('2019-03-08T10:49:29Z'))
-        expec(ctx.headers.get('Authorization')).to.be.ok
+      expec(ctx.headers['Authorization']).to.be.ok
     })
 })
 describe('contextV1', function () {
@@ -47,10 +49,11 @@ describe('contextV1', function () {
   let url='http://test.jdcloud-api.com/v1/resource:action?p1=p1&p0=p0&o=%&u=u'
   let ctx=new ContextV1(url,'POST',null,'test')
   ctx.regionId='cn-north-1'
-  ctx.headers.set('x-my-header','test')
-  ctx.headers.set('x-my-header_blank','  blank')
-  ctx.headers.set('x-jdcloud-nonce','testnonce')
-
+  ctx.headers={
+    'x-my-header':'test',
+    'x-my-header_blank':'  blank',
+    'x-jdcloud-nonce':'testnonce'
+  }
   let credentials= {
     accessKeyId: config.accessKeyId,
     secretAccessKey: config.secretAccessKey
@@ -58,13 +61,13 @@ describe('contextV1', function () {
   it('简单签名', function () {
     let signer=new Signer(ctx,credentials)
     signer.addAuthorization(new Date('2019-03-08T10:49:29Z'))
-    assert.ok(ctx.headers.get('Authorization'))
+    assert.ok(ctx.headers['Authorization'])
   })
 
   it('without serviceName',function () {
     let signer=new Signer(ctx,credentials)
     signer.addAuthorization(new Date('2019-03-08T10:49:29Z'))
-    assert.ok(ctx.headers.get('Authorization'))
+    assert.ok(ctx.headers['Authorization'])
   })
 
   it('without region',function () {
@@ -134,11 +137,13 @@ describe('header',function () {
   let ctx=new Context(urlInfo.hostname,urlInfo.pathname,'POST',null,'test')
   ctx.regionId='cn-north-1'
   ctx.query=ctx.buildQuery(urlInfo.query)
-  ctx.headers.set('content-type','application/json')
-  ctx.headers.set('X-Jdcloud-Date',"20190917T064708Z")
+  ctx.headers['content-type']='application/json'
+  ctx.headers['X-Jdcloud-Date']='20190917T064708Z'
+
+
   let signer=new Signer(ctx,credentials)
   it('包含空格,中间空格不缩减',function () {
-    ctx.headers.set('X-Jdcloud-Nonce',"  X-Jdcloud-   -Nonce  ")
+    ctx.headers['X-Jdcloud-Nonce']="  X-Jdcloud-   -Nonce  "
     let canonicalHeaders=signer.canonicalHeaders()
     assert.ok(canonicalHeaders==='content-type:application/json\n' +
       'x-jdcloud-date:20190917T064708Z\n' +
@@ -147,21 +152,22 @@ describe('header',function () {
 
   it('包含多个值',function () {
 
-    ctx.headers.set('X-Jdcloud-Nonce',["aaa", "a", "", " one blank ", "  two  blanks  ", "   three   blanks   ", "aa"])
+    ctx.headers['X-Jdcloud-Nonce']=["aaa", "a", "", " one blank ", "  two  blanks  ", "   three   blanks   ", "aa"]
     let canonicalHeaders=signer.canonicalHeaders()
     assert(canonicalHeaders==="content-type:application/json\nx-jdcloud-date:20190917T064708Z\nx-jdcloud-nonce:aaa,a,, one blank ,  two  blanks  ,   three   blanks   ,aa")
   })
 
   it('包含特殊字符',function () {
 
-    ctx.headers.set('X-Jdcloud-Nonce',"/`!@#$%^&*()=+/0123456789/[]\\\\;',<>?:\\\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~",)
+    ctx.headers['X-Jdcloud-Nonce']="/`!@#$%^&*()=+/0123456789/[]\\\\;',<>?:\\\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~"
     let canonicalHeaders=signer.canonicalHeaders()
     assert(canonicalHeaders==="content-type:application/json\nx-jdcloud-date:20190917T064708Z\nx-jdcloud-nonce:/`!@#$%^&*()=+/0123456789/[]\\\\;',<>?:\\\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~")
   })
 
   it('包含换行和空格',function () {
     let val=" \n  as\r\n \r df\r\n   "
-    ctx.headers.set('X-Jdcloud-Nonce',val)
+
+    ctx.headers['X-Jdcloud-Nonce']=val
     console.log(val.toString())
     let canonicalHeaders=signer.canonicalHeaders()
     console.log(canonicalHeaders)
@@ -181,9 +187,12 @@ describe('签名比对', function () {
   let ctx=new Context(urlInfo.hostname,urlInfo.pathname,'POST',null,'test')
   ctx.regionId='cn-north-1'
   ctx.query=ctx.buildQuery(urlInfo.query)
-  ctx.headers.set('content-type','application/json')
-  ctx.headers.set('x-my-header','test  ')
-  ctx.headers.set('x-my-header_blank','  blank')
+
+  ctx.headers={
+    'content-type':'application/json',
+    'x-my-header':'test  ',
+    'x-my-header_blank':'  blank'
+  }
   ctx.setNonce('testnonce')
   ctx.body='body data'
   let dateTime='20190214T104514Z'
@@ -219,7 +228,7 @@ fb2e317056269590681d091f8eb22272967c0b922b2deda887312215ea4eed4c`)
   })
 
   it('简单签名', function () {
-    assert(ctx.headers.get('Authorization')==='JDCLOUD3-HMAC-SHA256 Credential=TESTAK/20190214/cn-north-1/test/jdcloud3_request, SignedHeaders=x-jdcloud-date;x-jdcloud-nonce;x-my-header;x-my-header_blank, Signature=327e3b9d88e2122dbb7e146e5582aaba1a85eba9d4361928f40b24957cc9449c')
+    assert(ctx.headers['Authorization']==='JDCLOUD3-HMAC-SHA256 Credential=TESTAK/20190214/cn-north-1/test/jdcloud3_request, SignedHeaders=x-jdcloud-date;x-jdcloud-nonce;x-my-header;x-my-header_blank, Signature=327e3b9d88e2122dbb7e146e5582aaba1a85eba9d4361928f40b24957cc9449c')
   })
 
 })

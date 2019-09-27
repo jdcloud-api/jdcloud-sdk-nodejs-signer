@@ -5,6 +5,27 @@ var util = {
   isNode: function isNode () {
     return !util.isBrowser()
   },
+  encodePath(string) {
+    return string.split(/%2f/i)
+      .map(part => {
+        return part.replace(
+          // https://tools.ietf.org/html/rfc3986#section-3.3
+          /[^\w\.~\-!\$&'\(\)\*\+,;=:@\/\uD800-\uDBFF\uDC00-\uDFFF]/g,
+          encodeURIComponent
+        );
+      })
+      .reduce((prev, current) => !prev ? current : `${prev}%2F${current}`, '');
+  },
+  /**
+   * Decodes percent encoded path component.
+   * @param {string} string Component to decode.
+   * @returns {string} Decoded path component.
+   */
+  decodePath(string) {
+    return string.split(/%2f/i)
+      .map(decodeURIComponent)
+      .reduce((prev, current) => !prev ? current : `${prev}%2F${current}`, '');
+  },
   uriEscape: function uriEscape (string) {
     var output = encodeURIComponent(string)
     output = output.replace(/[^A-Za-z0-9_.~\-%]+/g, escape)
@@ -54,20 +75,46 @@ var util = {
   queryParamsToString: function queryParamsToString (params) {
     var items = []
     var escape = util.uriEscape
-    var sortedKeys = Object.keys(params).sort()
+    let escapKeyValues={}
+
+    let unescape=(item)=>{
+      item=item.replace(/\+/g," ")
+      item=item.replace(/%([^\d].)/, "%25$1")
+      item= decodeURIComponent(item)
+      return item
+    }
+
+    for(let key in params)
+    {
+      let value=params[key]
+      if(Array.isArray(value))
+      {
+        value=value.map(d=>{
+          return unescape(d)
+        })
+      }
+      else
+        value=unescape(value)
+      key=unescape(key)
+
+      let escapeKey=escape(key)
+      escapKeyValues[escapeKey]=escape(value)
+    }
+
+    var sortedKeys = Object.keys(escapKeyValues).sort()
 
     util.arrayEach(sortedKeys, function (name) {
-      var value = params[name]
-      var ename = escape(name)
+      var value = escapKeyValues[name]
+      var ename = name
       var result = ename + '='
       if (Array.isArray(value)) {
         var vals = []
         util.arrayEach(value, function (item) {
-          vals.push(escape(item))
+          vals.push(item)
         })
         result = ename + '=' + vals.sort().join('&' + ename + '=')
       } else if (value !== undefined && value !== null) {
-        result = ename + '=' + escape(value)
+        result = ename + '=' + value
       }
       items.push(result)
     })
@@ -471,6 +518,14 @@ var util = {
     createHash: function createHash (algorithm) {
       return util.crypto.lib.createHash(algorithm)
     }
+  },
+  objToStrMap(obj) {
+    let strMap = new Map();
+    for (let k of Object.keys(obj)) {
+        k=k.toLowerCase()
+      strMap.set(k, obj[k]);
+    }
+    return strMap;
   }
 }
 util.crypto.lib = require('crypto')
@@ -478,3 +533,4 @@ util.Buffer = require('buffer').Buffer
 util.url = require('url')
 util.querystring = require('querystring')
 module.exports = util
+

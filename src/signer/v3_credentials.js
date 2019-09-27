@@ -54,7 +54,7 @@ module.exports = {
     )
     var kRegion = util.crypto.hmac(kDate, region,digest)
     var kService = util.crypto.hmac(kRegion, service,digest)
-    var signingKey = util.crypto.hmac(kService, IDENTIFIER)
+    var signingKey = util.crypto.hmac(kService, IDENTIFIER,digest)
     if (shouldCache) {
       cachedSecret[cacheKey] = signingKey
       cacheQueue.push(cacheKey)
@@ -63,6 +63,8 @@ module.exports = {
         delete cachedSecret[cacheQueue.shift()]
       }
     }
+    debug('date',date)
+    debug('key', VERSION + credentials.secretAccessKey)
     debug('kDate',kDate.toString('hex'))
     debug('kRegion',kRegion.toString('hex'))
     debug('kService',kService.toString('hex'))
