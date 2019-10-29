@@ -24,6 +24,8 @@ describe('path',function () {
 
   it('路径含有特殊字符',function () {
     let path='/v1/regions/cn-north-1/instances/ /`!@#$%^&*()=+/0123456789/[]\\\\;\',<>?:\\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET'
+    //需要对path中特殊字符处理
+    path=path.replace(/[#?]/g,escape)
     let url=host+path
     let ctx=new ContextV1(url,method,header,service,regionId)
     let signer=new Signer(ctx,credentials)
@@ -71,10 +73,10 @@ describe('path',function () {
   it('路径含有多个连续斜杠 Context',function () {
 
     let path='///v1/regions/cn-north-1/instances//// //`!@#$%^&*()=+/0123456789/[]\\\\;\',<>?:\\"{}|/////abcdefghijklmnopqrstuvwxyz//ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET/'
-
+    //需要对path中特殊字符处理
+    path=path.replace(/[#?]/g,escape)
     let url=host+path
-    let ctxV1=new ContextV1(url,method,header,service,regionId)
-    let ctx=new Context(ctxV1.host,path,method,header,service,regionId)
+    let ctx=new ContextV1(url,method,header,service,regionId)
     let signer=new Signer(ctx,credentials)
     assert.ok(signer.sign(dateTime)==='JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=477413dad5e9eb00fcae9c5fd1dc099ee11c5f07dee2e6421a878f27606abd95')
   })

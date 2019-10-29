@@ -141,8 +141,6 @@ module.exports = class Signer  {
         parts.push(this.canonicalHeaders() + '\n')
         parts.push(this.signedHeaders())
         parts.push(this.hexEncodedBodyHash())
-
-
         this.log('canonicalString',parts)
         return parts.join('\n')
     }

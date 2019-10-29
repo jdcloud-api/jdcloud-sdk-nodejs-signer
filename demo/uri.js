@@ -8,4 +8,4 @@ const util=require('../src/util')
 let path='/v1/regions/cn-north-1/instances/ /`!@#$%^&*()=+/0123456789/[]\\\\;\',<>?:\\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET'
 console.log(util.uriEscapePath(path))
 
-console.log('(',util.uriEscape("("))
+console.log('[',util.uriEscape("["))

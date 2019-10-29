@@ -5,27 +5,6 @@ var util = {
   isNode: function isNode () {
     return !util.isBrowser()
   },
-  encodePath(string) {
-    return string.split(/%2f/i)
-      .map(part => {
-        return part.replace(
-          // https://tools.ietf.org/html/rfc3986#section-3.3
-          /[^\w\.~\-!\$&'\(\)\*\+,;=:@\/\uD800-\uDBFF\uDC00-\uDFFF]/g,
-          encodeURIComponent
-        );
-      })
-      .reduce((prev, current) => !prev ? current : `${prev}%2F${current}`, '');
-  },
-  /**
-   * Decodes percent encoded path component.
-   * @param {string} string Component to decode.
-   * @returns {string} Decoded path component.
-   */
-  decodePath(string) {
-    return string.split(/%2f/i)
-      .map(decodeURIComponent)
-      .reduce((prev, current) => !prev ? current : `${prev}%2F${current}`, '');
-  },
   uriEscape: function uriEscape (string) {
     var output = encodeURIComponent(string)
     output = output.replace(/[^A-Za-z0-9_.~\-%]+/g, escape)
@@ -79,8 +58,7 @@ var util = {
 
     let unescape=(item)=>{
       item=item.replace(/\+/g," ")
-      item=item.replace(/%([^\d].)/, "%25$1")
-      item= decodeURIComponent(item)
+      item=global.unescape(item)
       return item
     }
 
