@@ -11,7 +11,7 @@
         "runtimeExecutable": "npm",
         "runtimeArgs": [
           "run-script",
-          "debug"
+          "test:debug"
         ],
         "port": 9229
       }
