@@ -23,8 +23,7 @@ const noop = () => {};
 describe("V3 签名测试用例", function() {
   describe("path", function() {
     // it("路径含有特殊字符", function() {
-    //   let path =
-    //     "/v1/regions/cn-north-1/instances/ /`!@#$%^&*()=+/0123456789/[]\\\\;',<>?:\\\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET";
+    //   let path = "/v1/regions/cn-north-1/instances/ /`!@#$%^&*()=+/0123456789/[]\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET"
     //   //需要对path中特殊字符处理
     //   // path = path.replace(/[#?]/g, escape);
     //   let url = host + path;
@@ -33,7 +32,7 @@ describe("V3 签名测试用例", function() {
 
     //   assert.ok(
     //     signer.sign(dateTime) ===
-    //       "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=64d56beee01298d443127c0f0a7015f6f23c98719c1d8c851b53a1778d7189b1"
+    //       "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=925b9455228ef23ee7ec2dd3e33f7e645bcbcb3f4732894c17e4a0cf1d41d1e6"
     //   );
     // });
 
@@ -91,13 +90,13 @@ describe("V3 签名测试用例", function() {
     });
 
     // it('路径含有多个连续斜杠 Context',function () {
-    //   let path='///v1/regions/cn-north-1/instances//// //`!@#$%^&*()=+/0123456789/[]\\\\;\',<>?:\\"{}|/////abcdefghijklmnopqrstuvwxyz//ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET/'
+    //   let path = "///v1/regions/cn-north-1/instances//// //`!@#$%^&*()=+/0123456789/[]\;',<>?:\"{}|/////abcdefghijklmnopqrstuvwxyz//ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET/"
     //   //需要对path中特殊字符处理
     //   path=path.replace(/[#?]/g,escape)
     //   let url=host+path
     //   let ctx=new ContextV1(url,method,header,service,regionId)
     //   let signer=new Signer(ctx,credentials)
-    //   assert.ok(signer.sign(dateTime)==='JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=477413dad5e9eb00fcae9c5fd1dc099ee11c5f07dee2e6421a878f27606abd95')
+    //   assert.ok(signer.sign(dateTime)==='JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=92e4897d2a74a899399f5443615ddf110978363b9097932e522e079e6eb5f65b')
     // })
 
     it("路径已经编码", function() {
@@ -250,34 +249,50 @@ describe("V3 签名测试用例", function() {
       );
     });
 
-    // it("header的value包含多个值", function() {
+    /* 2019/11/1 这个用例暂时不管，未确定
+    it("header的value包含多个值", function() {
+      let header = {
+        "X-Jdcloud-Date": "20190917T064708Z",
+        "X-Jdcloud-Nonce": [
+          "aaa",
+          "a",
+          "",
+          " one blank ",
+          "  two  blanks  ",
+          "   three   blanks   ",
+          "aa"
+        ],
+        "Content-Type": "application/json"
+      };
+      let url = path;
+      let ctx = new ContextV1(url, method, header, service, regionId);
+      let signer = new Signer(ctx, credentials);
+      assert.ok(
+        signer.sign(dateTime) ===
+          "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=12ed9fbf2f8ebe6afcdd23853c9e58f37642f8a0361765557d2e4915f1e995e4"
+      );
+    });
+    */
+
+    // it("header的value包含特殊字符", function() {
     //   let header = {
-    //     "X-Jdcloud-Date": "20190917T064708Z",
-    //     "X-Jdcloud-Nonce": [
-    //       "aaa",
-    //       "a",
-    //       "",
-    //       " one blank ",
-    //       "  two  blanks  ",
-    //       "   three   blanks   ",
-    //       "aa"
-    //     ],
-    //     "Content-Type": "application/json"
-    //   };
+    //     "X-Jdcloud-Date":"20190917T064708Z",
+    //     "X-Jdcloud-Nonce":"/`!@#$%^&*()=+/0123456789/[]\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~",
+    //     "Content-Type":"application/json"
+    //   }
     //   let url = path;
     //   let ctx = new ContextV1(url, method, header, service, regionId);
-    //   let signer = new Signer(ctx, credentials);
+    //   let signer = new Signer(ctx, credentials, noop);
     //   assert.ok(
     //     signer.sign(dateTime) ===
-    //       "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=12ed9fbf2f8ebe6afcdd23853c9e58f37642f8a0361765557d2e4915f1e995e4"
+    //       "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=9046b11889b993a808fccf1322f7f04e7e5a7e0cc22d8b65e9986a8aab986ad7"
     //   );
     // });
 
-    it("header的value包含特殊字符", function() {
+    it("header的value包含换行符（\\r、\\n）、空格", function() {
       let header = {
         "X-Jdcloud-Date": "20190917T064708Z",
-        "X-Jdcloud-Nonce":
-          "/`!@#$%^&*()=+/0123456789/[]\\\\;',<>?:\\\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~",
+        "X-Jdcloud-Nonce": " \n  as\r\n \r df\r\n   ",
         "Content-Type": "application/json"
       };
       let url = path;
@@ -285,23 +300,8 @@ describe("V3 签名测试用例", function() {
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
-          "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=0e72e5d8dfca2a0af28ed76ee4c12177d9e4d2f83b775faffe80045a6b7f72c9"
+          "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=42966031633e0c237018d42eb1e56b94a266528cc8d274b5bbebe92bed13d4d8"
       );
     });
-
-    // it("header的value包含换行符（\\r、\\n）、空格", function() {
-    //   let header = {
-    //     "X-Jdcloud-Date": "20190917T064708Z",
-    //     "X-Jdcloud-Nonce": " \n  as\r\n \r df\r\n   ",
-    //     "Content-Type": "application/json"
-    //   };
-    //   let url = path;
-    //   let ctx = new ContextV1(url, method, header, service, regionId);
-    //   let signer = new Signer(ctx, credentials);
-    //   assert.ok(
-    //     signer.sign(dateTime) ===
-    //       "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=b30037126cdc4385e957e24e6d73ea28a8fb66f71ee68b8f60de12d3292d19c6"
-    //   );
-    // });
   });
 });
