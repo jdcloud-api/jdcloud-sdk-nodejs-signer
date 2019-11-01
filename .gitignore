@@ -190,3 +190,4 @@ dist
 jcloud-browser.js
 .cache
 package-lock.json
+.vscode
