@@ -33,8 +33,9 @@
     "lint": "eslint . --ext .js --fix",
     "test": "mocha --recursive",
     "debug": "node --nolazy --inspect-brk=9229 ./demo/request.js",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -w -r 0",
     "cz": "git cz",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -w -r 0"
+    "test:unit": "mocha --recursive --watch"
   },
   "author": "chenjingnan@jd.com",
   "license": "Apache",
