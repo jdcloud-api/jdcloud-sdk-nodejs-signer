@@ -1,1 +1,5 @@
 --require intelli-espower-loader
+--recursive
+--color
+--check-leaks
+--ignore test/sign.test.js
