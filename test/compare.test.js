@@ -322,21 +322,24 @@ describe("V3 签名测试用例", function() {
     });
     */
 
- /*    it("header的value包含特殊字符", function() {
+    /* it("header的value包含特殊字符", function() {
+      // 第一步没对应：X-Jdcloud-Nonce这个字段的\字段 js当成转义符 而看excel里却没有
+      // /`!@#$%^&*()=+/0123456789/[]\;',<>?:"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~
+      // /`!@#$%^&*()=+/0123456789/[];',<>?:"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~
       let header = {
         "X-Jdcloud-Date":"20190917T064708Z",
-        "X-Jdcloud-Nonce":"/`!@#$%^&*()=+/0123456789/[]\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~",
+        "X-Jdcloud-Nonce":"/`!@#$%^&*()=+/0123456789/[]\;\',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~",
         "Content-Type":"application/json"
       }
       let url = path;
       let ctx = new ContextV1(url, method, header, service, regionId);
-      let signer = new Signer(ctx, credentials, noop);
+      let signer = new Signer(ctx, credentials);
       assert.ok(
         signer.sign(dateTime) ===
           "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=9046b11889b993a808fccf1322f7f04e7e5a7e0cc22d8b65e9986a8aab986ad7"
       );
-    }); */
-
+    });
+ */
     it("header的value包含换行符（\\r、\\n）、空格", function() {
       let header = {
         "X-Jdcloud-Date": "20190917T064708Z",

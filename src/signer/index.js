@@ -131,6 +131,8 @@ module.exports = class Signer  {
         return parts.join('\n')
     }
 
+
+
     // 构建标准签名字符串
     canonicalString () {
         var parts = []
