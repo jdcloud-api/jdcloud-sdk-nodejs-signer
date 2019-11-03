@@ -17,7 +17,7 @@ class Context {
           path='/'+path
         this.host=host
         this.headers=headers||{}
-        this.method=method
+        this.method=method.toUpperCase()
         this.path=path
         this.serviceName=serviceName
         this.regionId=regionId
