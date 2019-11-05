@@ -23,11 +23,12 @@ const noop = () => {};
 describe("V3 签名测试用例", function() {
   describe("path", function() {
 
-    /* 用例有问题，确认中
     it ("路径含有特殊字符", function() {
-      let path = "/v1/regions/cn-north-1/instances/ /`!@#$%^&*()=+/0123456789/[]\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET"
+      // 加了两处转义才能过
+      let path = "/v1/regions/cn-north-1/instances/ /`!@#$%^&*()=+/0123456789/[]\\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET"
       //需要对path中特殊字符处理
       // path = path.replace(/[#?]/g, escape);
+      path = escape(path)
       let url = host + path;
       let ctx = new ContextV1(url, method, header, service, regionId);
       let signer = new Signer(ctx, credentials);
@@ -36,7 +37,7 @@ describe("V3 签名测试用例", function() {
         signer.sign(dateTime) ===
           "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=925b9455228ef23ee7ec2dd3e33f7e645bcbcb3f4732894c17e4a0cf1d41d1e6"
       );
-    }) */
+    })
 
     it("路径含有中文", function() {
       let path = "/v1/regions/cn-north-1/instances/中文:GET";
