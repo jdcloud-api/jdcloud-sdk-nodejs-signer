@@ -61,7 +61,7 @@ var util = {
       item=global.unescape(item)
       return item
     }
-
+    console.log(params)
     for(let key in params)
     {
       let value=params[key]
@@ -85,7 +85,7 @@ var util = {
       }
       escapKeyValues[escapeKey]=escapeWithArray(value)
     }
-
+    console.log(escapKeyValues)
     var sortedKeys = Object.keys(escapKeyValues).sort()
 
     util.arrayEach(sortedKeys, function (name) {

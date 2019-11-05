@@ -27,8 +27,8 @@ const noop = undefined
       // 加了两处转义才能过....
       let path = "/v1/regions/cn-north-1/instances/ /`!@#$%^&*()=+/0123456789/[]\\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET"
       //需要对path中特殊字符处理
-      // path = path.replace(/[#?]/g, escape);
-      path = escape(path)
+      path = path.replace(/[#?\\]/g, escape);
+
       let url = host + path;
       let ctx = new ContextV1(url, method, header, service, regionId);
       let signer = new Signer(ctx, credentials);
@@ -97,16 +97,13 @@ const noop = undefined
       // 加了两处转义才能过....
       let path = "///v1/regions/cn-north-1/instances//// //`!@#$%^&*()=+/0123456789/[]\\;',<>?:\"{}|/////abcdefghijklmnopqrstuvwxyz//ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET/"
       //需要对path中特殊字符处理
-      // path=path.replace(/[#?]/g,escape)
-      path = escape(path)
+      path = path.replace(/[#?\\]/g, escape);
       let url=host+path
       let ctx=new ContextV1(url,method,header,service,regionId)
       let signer=new Signer(ctx,credentials)
       assert.ok(signer.sign(dateTime)==='JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=92e4897d2a74a899399f5443615ddf110978363b9097932e522e079e6eb5f65b')
     })
 
-    // 重点
-    // 解码后有+号， 需要确认 +号先替换再解码 还是 先解码再替换+号
     it("路径已经编码", function() {
       let path =
         "/v1/regions/cn-north-1/instances/%20/%60%21%40%23%24%25%5E%26%2A%28%29%3D%2B/0123456789/%5B%5D%5C%5C%3B%27%2C%3C%3E%3F%3A%5C%22%7B%7D%7C/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~%3AGET";
@@ -191,11 +188,10 @@ const noop = undefined
       );
     });
 
-    // 重点，需确认query是否先解码?
+
     it("查询参数包含重复key和value", function() {
       let query =
         "?aa=aa&aa%3Daa=&aa=aa%3D&aa=&aa=aaa&aaa=aaa&aaa=aa&aaa=a&ab=aa&ab=aa&cc=&cc=&bb=aa&bb=";
-      // query = unescape(query)
       let url = path + query;
       let ctx = new ContextV1(url, method, header, service, regionId);
       let signer = new Signer(ctx, credentials);
@@ -208,7 +204,7 @@ const noop = undefined
     // 重点 特殊字符怎么处理？
     it("查询参数的key包含特殊字符，value包含特殊字符(不含=、&)", function() {
       let query = "?special key=/ /`!@#$%^*()+/0123456789/[]\\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~&/ /`!@#$%^*()+/0123456789/[]\\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~=special value"
-      query = query.replace(/#/g, escape)
+      query = query.replace(/[#\\]/g, escape);
       let url = path + query;
       let ctx = new ContextV1(url, method, header, service, regionId);
       let signer = new Signer(ctx, credentials);
@@ -222,14 +218,14 @@ const noop = undefined
       const map = new Map()
       map.set('nullValue', '')
       map.set('', 'nullKey')
-      map.set('specialValue', '&&==&==&&=&=')
-      map.set('&&==&==&&=&=', 'specialKey')
+      map.set('specialValue', encodeURIComponent('&&==&==&&=&=') )
+      map.set(encodeURIComponent('&&==&==&&=&=') , 'specialKey')
       const temp = []
       for (let [key, value] of map) {
         temp.push(`${key}=${value}`)
       }
       let query = '?' + temp.join('&')
-      assert.ok(query === '?nullValue=&=nullKey&specialValue=&&==&==&&=&=&&&==&==&&=&==specialKey')
+
       let url = path + query;
       let ctx = new ContextV1(url, method, header, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
@@ -239,18 +235,18 @@ const noop = undefined
       );
     });
 
-    /* it("查询参数部分编码部分未编码，且包含+，且涉及编码字符及未编码字符排序", function() {
-      let query = "? =blank&%20=blank&+= 2&%2b= 1&blank= &blank=+&blank=%20";
-      let url = path + query;
+     it("查询参数部分编码部分未编码，且包含+，且涉及编码字符及未编码字符排序", function() {
+      let query =" =blank&%20=blank&+= 2&%2b= 1&blank= &blank=+&blank=%20";
+      let url = path +"?"+ query
       let ctx = new ContextV1(url, method, header, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
           "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=78c0a4db84050d773533c78c1a0f73bf974faf5df881e39b18c3e0de8110324e"
       );
-    }); */
+    });
 
-    /* it("查询参数包含错误的编码", function() {
+     it("查询参数包含错误的编码", function() {
       let query = "? =blank&%2=blank&+=jia0&%2b=jia1&%2B=jia2&blank= %2b%2f%2/&blank=+&%2/blank=%0%f";
       let url = path + query;
       let ctx = new ContextV1(url, method, header, service, regionId);
@@ -259,7 +255,7 @@ const noop = undefined
         signer.sign(dateTime) ===
           "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=972987a6f95be456935cde8be8f106114e2ad27465a507644e61f021a98a7218"
       );
-    }); */
+    });
 
     it("查询参数包含中文", function() {
       let query = "?中文参数=中文参数值";
@@ -329,12 +325,8 @@ const noop = undefined
       );
     });
     */
-
-    // 重点
     it("header的value包含特殊字符", function() {
-      // 第一步没对应：X-Jdcloud-Nonce这个字段的\字段 js当成转义符 而看excel里却没有
-      // /`!@#$%^&*()=+/0123456789/[]\;',<>?:"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~
-      // /`!@#$%^&*()=+/0123456789/[];',<>?:"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~
+
       let header = {
         "X-Jdcloud-Date":"20190917T064708Z",
         "X-Jdcloud-Nonce":"/`!@#$%^&*()=+/0123456789/[]\\;\',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~",
