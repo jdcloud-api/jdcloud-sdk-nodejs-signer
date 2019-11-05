@@ -22,9 +22,9 @@ const noop = () => {};
 
 describe("V3 签名测试用例", function() {
   describe("path", function() {
-
+    // 重点
     it ("路径含有特殊字符", function() {
-      // 加了两处转义才能过
+      // 加了两处转义才能过....
       let path = "/v1/regions/cn-north-1/instances/ /`!@#$%^&*()=+/0123456789/[]\\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET"
       //需要对path中特殊字符处理
       // path = path.replace(/[#?]/g, escape);
@@ -92,17 +92,20 @@ describe("V3 签名测试用例", function() {
       );
     });
 
-    /* 用例有问题，确认中
+    // 重点
     it('路径含有多个连续斜杠 Context',function () {
-      let path = "///v1/regions/cn-north-1/instances//// //`!@#$%^&*()=+/0123456789/[]\;',<>?:\"{}|/////abcdefghijklmnopqrstuvwxyz//ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET/"
+      // 加了两处转义才能过....
+      let path = "///v1/regions/cn-north-1/instances//// //`!@#$%^&*()=+/0123456789/[]\\;',<>?:\"{}|/////abcdefghijklmnopqrstuvwxyz//ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~:GET/"
       //需要对path中特殊字符处理
       // path=path.replace(/[#?]/g,escape)
+      path = escape(path)
       let url=host+path
       let ctx=new ContextV1(url,method,header,service,regionId)
       let signer=new Signer(ctx,credentials)
       assert.ok(signer.sign(dateTime)==='JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=92e4897d2a74a899399f5443615ddf110978363b9097932e522e079e6eb5f65b')
-    }) */
+    })
 
+    // 重点
     // 解码后有+号， 需要确认 +号先替换再解码 还是 先解码再替换+号
     it("路径已经编码", function() {
       let path =
@@ -188,28 +191,32 @@ describe("V3 签名测试用例", function() {
       );
     });
 
+    // 重点，需确认query是否先解码?
     // it("查询参数包含重复key和value", function() {
     //   let query =
-    //     "??aa=aa&aa%3Daa=&aa=aa%3D&aa=&aa=aaa&aaa=aaa&aaa=aa&aaa=a&ab=aa&ab=aa&cc=&cc=&bb=aa&bb=";
+    //     "?aa=aa&aa%3Daa=&aa=aa%3D&aa=&aa=aaa&aaa=aaa&aaa=aa&aaa=a&ab=aa&ab=aa&cc=&cc=&bb=aa&bb=";
+    //   // query = unescape(query)
     //   let url = path + query;
     //   let ctx = new ContextV1(url, method, header, service, regionId);
-    //   let signer = new Signer(ctx, credentials, noop);
+    //   let signer = new Signer(ctx, credentials);
     //   assert.ok(
     //     signer.sign(dateTime) ===
     //       "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=8ccc3c9af11e964b3c5d6020d2af49e97e27fbb23e2b8f57bdc84815e471d54b"
     //   );
     // });
 
-    /* it("查询参数的key包含特殊字符，value包含特殊字符(不含=、&)", function() {
-      let query = "?special key=/ /`!@#$%^*()+/0123456789/[]\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~&/ /`!@#$%^*()+/0123456789/[]\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~=special value"
+    // 重点 特殊字符怎么处理？
+    it("查询参数的key包含特殊字符，value包含特殊字符(不含=、&)", function() {
+      let query = "?special key=/ /`!@#$%^*()+/0123456789/[]\\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~&/ /`!@#$%^*()+/0123456789/[]\\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~=special value"
+      query = query.replace(/#/g, escape)
       let url = path + query;
       let ctx = new ContextV1(url, method, header, service, regionId);
-      let signer = new Signer(ctx, credentials, noop);
+      let signer = new Signer(ctx, credentials);
       assert.ok(
         signer.sign(dateTime) ===
           "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=684a4397896f81eaefbba29c42be66080b32993dce700e1647608a64595fd655"
       );
-    }); */
+    });
 
     /* it("查询参数的key包含特殊字符=、&，value包含特殊字符=、&", function() {
       const map = new Map()
@@ -323,13 +330,14 @@ describe("V3 签名测试用例", function() {
     });
     */
 
-    /* it("header的value包含特殊字符", function() {
+    // 重点
+    it("header的value包含特殊字符", function() {
       // 第一步没对应：X-Jdcloud-Nonce这个字段的\字段 js当成转义符 而看excel里却没有
       // /`!@#$%^&*()=+/0123456789/[]\;',<>?:"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~
       // /`!@#$%^&*()=+/0123456789/[];',<>?:"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~
       let header = {
         "X-Jdcloud-Date":"20190917T064708Z",
-        "X-Jdcloud-Nonce":"/`!@#$%^&*()=+/0123456789/[]\;\',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~",
+        "X-Jdcloud-Nonce":"/`!@#$%^&*()=+/0123456789/[]\\;\',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~",
         "Content-Type":"application/json"
       }
       let url = path;
@@ -340,7 +348,7 @@ describe("V3 签名测试用例", function() {
           "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=9046b11889b993a808fccf1322f7f04e7e5a7e0cc22d8b65e9986a8aab986ad7"
       );
     });
- */
+
     it("header的value包含换行符（\\r、\\n）、空格", function() {
       let header = {
         "X-Jdcloud-Date": "20190917T064708Z",
