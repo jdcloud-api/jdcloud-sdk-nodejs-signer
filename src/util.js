@@ -76,7 +76,14 @@ var util = {
       key=unescape(key)
 
       let escapeKey=escape(key)
-      escapKeyValues[escapeKey]=escape(value)
+      let escapeWithArray=value=>{
+        if(Array.isArray(value))
+        {
+          return value.map(d=>escape(d))
+        }
+        return escape(value)
+      }
+      escapKeyValues[escapeKey]=escapeWithArray(value)
     }
 
     var sortedKeys = Object.keys(escapKeyValues).sort()

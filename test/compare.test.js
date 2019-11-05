@@ -18,9 +18,9 @@ const header = {
 // const datetimekey = "X-Jdcloud-Date";
 const dateTime = new Date("2019-09-17T06:47:08Z");
 const host = "http://apigw-internal-dev.cn-north-1.jcloudcs.com:8000";
-const noop = () => {};
+const noop = undefined
 
-describe("V3 签名测试用例", function() {
+
   describe("path", function() {
     // 重点
     it ("路径含有特殊字符", function() {
@@ -192,18 +192,18 @@ describe("V3 签名测试用例", function() {
     });
 
     // 重点，需确认query是否先解码?
-    // it("查询参数包含重复key和value", function() {
-    //   let query =
-    //     "?aa=aa&aa%3Daa=&aa=aa%3D&aa=&aa=aaa&aaa=aaa&aaa=aa&aaa=a&ab=aa&ab=aa&cc=&cc=&bb=aa&bb=";
-    //   // query = unescape(query)
-    //   let url = path + query;
-    //   let ctx = new ContextV1(url, method, header, service, regionId);
-    //   let signer = new Signer(ctx, credentials);
-    //   assert.ok(
-    //     signer.sign(dateTime) ===
-    //       "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=8ccc3c9af11e964b3c5d6020d2af49e97e27fbb23e2b8f57bdc84815e471d54b"
-    //   );
-    // });
+    it("查询参数包含重复key和value", function() {
+      let query =
+        "?aa=aa&aa%3Daa=&aa=aa%3D&aa=&aa=aaa&aaa=aaa&aaa=aa&aaa=a&ab=aa&ab=aa&cc=&cc=&bb=aa&bb=";
+      // query = unescape(query)
+      let url = path + query;
+      let ctx = new ContextV1(url, method, header, service, regionId);
+      let signer = new Signer(ctx, credentials);
+      assert.ok(
+        signer.sign(dateTime) ===
+          "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=8ccc3c9af11e964b3c5d6020d2af49e97e27fbb23e2b8f57bdc84815e471d54b"
+      );
+    });
 
     // 重点 特殊字符怎么处理？
     it("查询参数的key包含特殊字符，value包含特殊字符(不含=、&)", function() {
@@ -218,7 +218,7 @@ describe("V3 签名测试用例", function() {
       );
     });
 
-    /* it("查询参数的key包含特殊字符=、&，value包含特殊字符=、&", function() {
+     it("查询参数的key包含特殊字符=、&，value包含特殊字符=、&", function() {
       const map = new Map()
       map.set('nullValue', '')
       map.set('', 'nullKey')
@@ -237,7 +237,7 @@ describe("V3 签名测试用例", function() {
         signer.sign(dateTime) ===
           "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=cc1b199ef770ffc179b3915b9cefa83024bda9d88638c19fe079292de5b91546"
       );
-    }); */
+    });
 
     /* it("查询参数部分编码部分未编码，且包含+，且涉及编码字符及未编码字符排序", function() {
       let query = "? =blank&%20=blank&+= 2&%2b= 1&blank= &blank=+&blank=%20";
@@ -383,4 +383,4 @@ describe("V3 签名测试用例", function() {
     }); */
 
   });
-});
+
