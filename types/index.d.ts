@@ -11,7 +11,7 @@ export declare class Context {
 
 export default class ContextV1 extends Context {
 
-  constructor(url:string,method:string,headers:object,serviceName:string='',regionId:string='')
+  constructor(url:string,method:string,headers:object,serviceName:string='',regionId:string='',body:object)
 }
 
 export declare interface Credentials
