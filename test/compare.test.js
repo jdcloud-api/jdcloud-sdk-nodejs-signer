@@ -1,4 +1,5 @@
 const assert = require("assert");
+const querystring=require('querystring')
 const { Signer, Context, ContextV1 } = require("../src");
 const util = require("../src/util");
 
@@ -15,6 +16,7 @@ const header = {
   "X-Jdcloud-Nonce": "X-Jdcloud-Nonce",
   "Content-Type": "application/json"
 };
+const body=''
 // const datetimekey = "X-Jdcloud-Date";
 const dateTime = new Date("2019-09-17T06:47:08Z");
 const host = "http://apigw-internal-dev.cn-north-1.jcloudcs.com:8000";
@@ -29,7 +31,7 @@ describe("path", function() {
       path = path.replace(/[#?\\]/g, escape);
 
       let url = host + path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+      let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials);
 
       assert.ok(
@@ -41,7 +43,7 @@ describe("path", function() {
     it("路径含有中文", function() {
       let path = "/v1/regions/cn-north-1/instances/中文:GET";
       let url = host + path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -52,7 +54,7 @@ describe("path", function() {
     it("路径为空", function() {
       let path = "";
       let url = host + path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -83,7 +85,7 @@ describe("path", function() {
     it("路径结尾有斜杠", function() {
       let path = "/v1/";
       let url = host + path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+      let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -98,7 +100,7 @@ describe("path", function() {
       //需要对path中特殊字符处理
       path = path.replace(/[#?\\]/g, escape);
       let url=host+path
-      let ctx=new ContextV1(url,method,header,service,regionId)
+      let ctx=new ContextV1(url,method,header,body,service,regionId)
       let signer=new Signer(ctx,credentials)
       assert.ok(signer.sign(dateTime)==='JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=92e4897d2a74a899399f5443615ddf110978363b9097932e522e079e6eb5f65b')
     })
@@ -107,7 +109,7 @@ describe("path", function() {
       let path =
         "/v1/regions/cn-north-1/instances/%20/%60%21%40%23%24%25%5E%26%2A%28%29%3D%2B/0123456789/%5B%5D%5C%5C%3B%27%2C%3C%3E%3F%3A%5C%22%7B%7D%7C/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~%3AGET";
       let url = host + path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -118,7 +120,7 @@ describe("path", function() {
     it("路径已经编码，且含有斜杠编码", function() {
       let path = "%2Fv1%2Fregions%2F%2F%2Fcn-north-1%2Finstances";
       let url = host + path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -129,7 +131,7 @@ describe("path", function() {
     it("路径部分编码、部分未编码", function() {
       let path = "/v1%2Fregions/cn-north-1%2F%2F%2Finstances";
       let url = host + path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -141,7 +143,7 @@ describe("path", function() {
       let path =
         "/v1/%2/%2f/%2b%f";
       let url = host + path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -153,7 +155,7 @@ describe("path", function() {
       let path =
         "/v1%2Fregions/cn-north-1%2F%2F%2Finstances/ + /+/ +/+ /%2B%20%2B%2F%2F";
       let url = host + path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -168,7 +170,7 @@ describe("path", function() {
     it("查询参数包含空key", function() {
       let query = "?=a&a=a";
       let url = path + query;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -179,7 +181,7 @@ describe("path", function() {
     it("查询参数包含空key和空value", function() {
       let query = "?=&a=a";
       let url = path + query;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -193,7 +195,7 @@ describe("path", function() {
         "?aa=aa&aa%3Daa=&aa=aa%3D&aa=&aa=aaa&aaa=aaa&aaa=aa&aaa=a&ab=aa&ab=aa&cc=&cc=&bb=aa&bb=";
 
       let url = path + query;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials);
       assert.ok(
         signer.sign(dateTime) ===
@@ -205,7 +207,7 @@ describe("path", function() {
       let query = "?special key=/ /`!@#$%^*()+/0123456789/[]\\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~&/ /`!@#$%^*()+/0123456789/[]\\;',<>?:\"{}|/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/-_.~=special value"
       query = query.replace(/[#\\]/g, escape);
       let url = path + query;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials);
       assert.ok(
         signer.sign(dateTime) ===
@@ -214,19 +216,15 @@ describe("path", function() {
     });
 
      it("查询参数的key包含特殊字符=、&，value包含特殊字符=、&", function() {
-      const map = new Map()
-      map.set('nullValue', '')
-      map.set('', 'nullKey')
-      map.set('specialValue', encodeURIComponent('&&==&==&&=&=') )
-      map.set(encodeURIComponent('&&==&==&&=&=') , 'specialKey')
-      const temp = []
-      for (let [key, value] of map) {
-        temp.push(`${key}=${value}`)
-      }
-      let query = '?' + temp.join('&')
 
-      let url = path + query;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+      let queryMap={
+        'nullValue':'',
+        '':'nullKey',
+        'specialValue':'&&==&==&&=&=',
+        '&&==&==&&=&=':'specialKey'
+      }
+      let url = path +`?${querystring.stringify(queryMap)}` ;
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -237,7 +235,7 @@ describe("path", function() {
      it("查询参数部分编码部分未编码，且包含+，且涉及编码字符及未编码字符排序", function() {
       let query =" =blank&%20=blank&+= 2&%2b= 1&blank= &blank=+&blank=%20";
       let url = path +"?"+ query
-      let ctx = new ContextV1(url , method, header, service, regionId);
+      let ctx = new ContextV1(url , method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -248,7 +246,7 @@ describe("path", function() {
      it("查询参数包含错误的编码", function() {
       let query = "? =blank&%2=blank&+=jia0&%2b=jia1&%2B=jia2&blank= %2b%2f%2/&blank=+&%2/blank=%0%f";
       let url = path + query;
-      let ctx = new ContextV1(url , method, header, service, regionId);
+      let ctx = new ContextV1(url , method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -259,7 +257,7 @@ describe("path", function() {
     it("查询参数包含中文", function() {
       let query = "?中文参数=中文参数值";
       let url = path + query;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -277,7 +275,7 @@ describe("path", function() {
         "Content-Type": "application/json"
       };
       let url = path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -292,7 +290,7 @@ describe("path", function() {
         "Content-Type": "application/json"
       };
       let url = path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -316,7 +314,7 @@ describe("path", function() {
         "Content-Type": "application/json"
       };
       let url = path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials);
       assert.ok(
         signer.sign(dateTime) ===
@@ -332,7 +330,7 @@ describe("path", function() {
         "Content-Type":"application/json"
       }
       let url = path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials);
       assert.ok(
         signer.sign(dateTime) ===
@@ -347,7 +345,7 @@ describe("path", function() {
         "Content-Type": "application/json"
       };
       let url = path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       assert.ok(
         signer.sign(dateTime) ===
@@ -365,7 +363,7 @@ describe("path", function() {
       "x-jdcloud-content-sha256":"xxx"
       };
       let url = path;
-      let ctx = new ContextV1(url, method, header, service, regionId);
+     let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials, noop);
       // assert.ok(
       //   signer.sign(dateTime) ===
