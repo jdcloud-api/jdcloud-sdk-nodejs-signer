@@ -33,3 +33,4 @@ ctx.method='POST'
 signer=new Signer(ctx,credentials)
 auth= signer.sign(new Date())
 console.log("POST签名为：",auth)
+

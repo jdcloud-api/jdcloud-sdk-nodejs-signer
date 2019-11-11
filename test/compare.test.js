@@ -33,9 +33,9 @@ describe("path", function() {
       let url = host + path;
       let ctx = new ContextV1(url, method, header,body, service, regionId);
       let signer = new Signer(ctx, credentials);
-
+      let token=signer.sign(dateTime)
       assert.ok(
-        signer.sign(dateTime) ===
+         token===
           "JDCLOUD3-HMAC-SHA256 Credential=ak/20190917/cn-north-1/apigatewaytestproductline/jdcloud3_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=925b9455228ef23ee7ec2dd3e33f7e645bcbcb3f4732894c17e4a0cf1d41d1e6"
       );
     })

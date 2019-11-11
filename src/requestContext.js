@@ -25,7 +25,6 @@ class Context {
 
     get pathName()
     {
-
         let path=this.path.replace(/\+/g," ")
         path=unescape(path)
         return path.replace(/(\/{2,})/g,'/')

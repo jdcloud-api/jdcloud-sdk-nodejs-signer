@@ -15,14 +15,14 @@
 
 var util = require('../util')
 var v3Credentials = require('./v3_credentials')
-const {VERSION,HEADERDATE,HEADERNOUNCE,HEADERHOST}=require('./const')
+const {VERSION,HEADERDATE,HEADERNOUNCE,HEADERHOST,BLACKLIST}=require('./const')
 const debug = require('debug')('signer')
 module.exports = class Signer  {
     constructor (request,credentials,logger=console.log) {
 
         this.signatureCache = true
         this.algorithm = `${VERSION}-HMAC-SHA256`
-
+        //todo resetHeader
         this.signableHeaders = [
             'content-type',
             HEADERHOST,
@@ -49,7 +49,10 @@ module.exports = class Signer  {
         headers.push(sessionToken)
       for(let header of signableHeaders)
       {
-        headers.push(header)
+        if(!BLACKLIST.find(d=>d===header))
+        {
+          headers.push(header)
+        }
       }
       this.signableHeaders=[...new Set(headers)]
     }
@@ -175,12 +178,9 @@ module.exports = class Signer  {
                     value === null ||
                     typeof value.toString !== 'function'
                 ) {
-                    throw util.error(
-                        new Error('Header ' + key + ' contains invalid value'),
-                        {
-                            code: 'InvalidHeader'
-                        }
-                    )
+                     let error=new Error('Header ' + key + ' contains invalid value')
+                     error.code='InvalidHeader'
+                     throw error
                 }
                 parts.push(key + ':' + this.canonicalHeaderValues(value.toString()))
             }
