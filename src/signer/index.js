@@ -22,13 +22,6 @@ module.exports = class Signer  {
 
         this.signatureCache = true
         this.algorithm = `${VERSION}-HMAC-SHA256`
-        //todo resetHeader
-        this.signableHeaders = [
-            'content-type',
-            HEADERHOST,
-            HEADERDATE,
-            HEADERNOUNCE
-        ]
 
         this.request=request
         this.headers=request.headers
@@ -36,9 +29,11 @@ module.exports = class Signer  {
         this.serviceName =request.serviceName
         this.logger=logger
         this.credentials=credentials
+
+        this.setSignableHeaders()
     }
 
-    setSignableHeaders(signableHeaders)
+    setSignableHeaders()
     {
       let headers=[HEADERNOUNCE]
       let securityToken='x-jdcloud-security-token'
@@ -47,8 +42,9 @@ module.exports = class Signer  {
         headers.push(securityToken)
       if(this.headers[sessionToken])
         headers.push(sessionToken)
-      for(let header of signableHeaders)
+      for(let header of Object.keys(this.headers))
       {
+        header=header.toLowerCase()
         if(!BLACKLIST.find(d=>d===header))
         {
           headers.push(header)
@@ -182,13 +178,18 @@ module.exports = class Signer  {
                      error.code='InvalidHeader'
                      throw error
                 }
-                parts.push(key + ':' + this.canonicalHeaderValues(value.toString()))
+                parts.push(key + ':' + this.canonicalHeaderValues(value))
             }
         })
         return parts.join('\n')
     }
 
     canonicalHeaderValues (values) {
+        let trim=val=>val.replace(/^\s+|\s+$/g, '')
+        if(Array.isArray(values))
+        {
+          values=values.map(d=>trim(d)).toString()
+        }
         return values.replace(/^\s+|\s+$/g, '')
     }
 
