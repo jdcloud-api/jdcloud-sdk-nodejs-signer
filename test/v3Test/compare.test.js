@@ -41,7 +41,15 @@ const catePath='路径'
 const cateQuery='查询参数'
 const cateHeader='header'
 const headerKey='默认header'
-
+function objectToMap(data)
+{
+  let map=new Map()
+  for(let key in data)
+  {
+    map.set(key.toLowerCase(),data[key])
+  }
+  return map
+}
 describe(catePath, function() {
     let pathUts=utList[catePath]
 
@@ -59,7 +67,7 @@ describe(catePath, function() {
           path='/'+path
         let url = host + path;
         let header=JSON.parse(item[headerKey])
-        let ctx = new ContextV1(url, method, header,body, service, regionId);
+        let ctx = new ContextV1(url, method, objectToMap(header),body, service, regionId);
         let signer = new Signer(ctx, credentials);
         let token=signer.sign(dateTime)
         assert.ok(token===item[Authorization_Key]);
@@ -87,7 +95,7 @@ describe(cateQuery, function() {
        query = query.replace(/[#\\]/g, escape);
        let url = path + query;
        let header=JSON.parse(item[headerKey])
-       let ctx = new ContextV1(url, method, header,body, service, regionId);
+       let ctx = new ContextV1(url, method, objectToMap(header),body, service, regionId);
        let signer = new Signer(ctx, credentials);
        let token=signer.sign(dateTime)
        assert.ok(token===item[Authorization_Key]);
@@ -106,7 +114,7 @@ describe(cateHeader, function() {
       let header =JSON.parse(headerString)
 
       let url = path
-      let ctx = new ContextV1(url, method, header,body, service, regionId);
+      let ctx = new ContextV1(url, method, objectToMap(header),body, service, regionId);
       let signer = new Signer(ctx, credentials);
       let token=signer.sign(dateTime)
       assert.ok(token===item[Authorization_Key]);

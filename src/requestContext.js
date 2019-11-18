@@ -16,7 +16,7 @@ class Context {
         if(!path.startsWith('/'))
           path='/'+path
         this.host=host
-        this.headers=headers||{}
+        this.headers=headers||new Map()
         this.method=method.toUpperCase()
         this.path=path
         this.serviceName=serviceName
@@ -32,17 +32,17 @@ class Context {
 
     buildNonce()
     {
-      this.headers[NOUNCEHEADER]=uuid.v4()
+      this.headers.set(NOUNCEHEADER,uuid.v4())
     }
 
     setNonce(nonce)
     {
-      this.headers[NOUNCEHEADER]=nonce
+      this.headers.set(NOUNCEHEADER,nonce)
     }
 
     check()
     {
-        if(!Object.keys(this.headers).find(d=>d.toLowerCase()===NOUNCEHEADER))
+      if(![...this.headers.keys()].find(d=>d.toLowerCase()===NOUNCEHEADER))
           throw new Error("header['x-jdcloud-nonce'] is required")
         if(!this.regionId)
             throw new Error("regionId is required")

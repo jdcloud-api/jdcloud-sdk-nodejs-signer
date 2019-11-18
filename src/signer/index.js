@@ -25,11 +25,9 @@ module.exports = class Signer  {
 
         this.request=request
         this.headers=request.headers
-        this.mapHeaders=util.objToStrMap(this.headers)
         this.serviceName =request.serviceName
         this.logger=logger
         this.credentials=credentials
-
         this.setSignableHeaders()
     }
 
@@ -38,11 +36,11 @@ module.exports = class Signer  {
       let headers=[HEADERNOUNCE]
       let securityToken='x-jdcloud-security-token'
       let sessionToken ='x-jdcloud-session-token'
-      if(this.headers[securityToken])
+      if(this.headers.has(securityToken))
         headers.push(securityToken)
-      if(this.headers[sessionToken])
+      if(this.headers.has(sessionToken))
         headers.push(sessionToken)
-      for(let header of Object.keys(this.headers))
+      for(let header of  this.headers.keys())
       {
         header=header.toLowerCase()
         if(!BLACKLIST.find(d=>d===header))
@@ -58,8 +56,8 @@ module.exports = class Signer  {
         var datetime = util.date.iso8601(date).replace(/[:-]|\.\d{3}/g, '')
         this.addHeaders(this.credentials, datetime)
 
-        if (!this.headers['x-jdcloud-oauth2-token']) {
-            this.headers['Authorization']= this.authorization(this.credentials, datetime)
+        if (!this.headers.has('x-jdcloud-oauth2-token')) {
+            this.headers.set('Authorization',this.authorization(this.credentials, datetime))
         }
     }
 
@@ -75,25 +73,25 @@ module.exports = class Signer  {
     }
 
     addHeaders (credentials, datetime) {
-        if(!this.mapHeaders.has(HEADERDATE))
+        if(!this.headers.has(HEADERDATE))
         {
-          this.headers[HEADERDATE]=datetime
+          this.headers.set(HEADERDATE,datetime)
         }
-        if(!this.mapHeaders.has(HEADERHOST))
+        if(!this.headers.has(HEADERHOST))
         {
-          this.headers[HEADERHOST]=this.request.host
+          this.headers.set(HEADERHOST,this.request.host)
         }
-
     }
 
     signedHeaders () {
         var keys = new Set()
-      Object.keys(this.headers).forEach(key=>{
+      for(let key of this.headers.keys())
+      {
         key = key.toLowerCase()
         if (this.isSignableHeader(key)) {
           keys.add(key)
         }
-      })
+      }
         return [...keys].sort().join(';')
     }
 
@@ -157,9 +155,9 @@ module.exports = class Signer  {
     canonicalHeaders () {
         var headers = []
 
-        for(let key in this.headers)
+        for(let key of this.headers.keys())
         {
-          headers.push([key,this.headers[key]])
+          headers.push([key,this.headers.get(key)])
         }
         headers.sort(function (a, b) {
             return a[0].toLowerCase() < b[0].toLowerCase() ? -1 : 1
@@ -215,7 +213,7 @@ module.exports = class Signer  {
 
     hexEncodedBodyHash () {
         return (
-            this.headers['x-jdcloud-content-sha256'] ||
+            this.headers.get('x-jdcloud-content-sha256') ||
             this.hexEncodedHash(this.request.body || '')
         )
     }
