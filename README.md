@@ -60,8 +60,10 @@ signer=new Signer(ctx,credentials)
 auth= signer.sign(new Date())
 console.log("POST签名为：",auth)
 ```
+
+将生成的签名，传递到header里作为Authorization的值，即可进行调用。
 ## 注意事项 ##
-1. 设置请求上下文Context(仅作请求签名的载体，不发请求)，如host,path,method,headers,serviceName(默认为'')，具体参见构造函数(ts 定义)。其中header必须包含：x-jdcloud-nonce、x-jdcloud-date(格式：20190101T010101Z)、content-type。
+1. 设置请求上下文Context(仅作请求签名的载体，不发请求)，如host,path,method,headers,serviceName(默认为'')，具体参见构造函数(ts 定义)。其中header必须包含：x-jdcloud-nonce、x-jdcloud-date(格式：20190101T010101Z)。
 1. query需要调用buildQuery 方法处理
 1. 初始化Signer，设置ak/sk和logger(默认为console),执行方法得到签名 
 
