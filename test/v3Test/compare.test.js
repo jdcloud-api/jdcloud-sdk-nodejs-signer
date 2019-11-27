@@ -14,7 +14,7 @@ const regionId = "cn-north-1";
 const body=''
 // const datetimekey = "X-Jdcloud-Date";
 const dateTime = new Date("2019-09-17T06:47:08Z");
-const host = "http://apigw-internal-dev.cn-north-1.jcloudcs.com:8000";
+
 const noop = undefined
 const Authorization_Key='Authorization'
 
@@ -40,6 +40,8 @@ normalize(info)
 const catePath='路径'
 const cateQuery='查询参数'
 const cateHeader='header'
+const cateIntegration='综合场景'
+
 const headerKey='默认header'
 function objectToMap(data)
 {
@@ -65,7 +67,7 @@ describe(catePath, function() {
           path=''
         if(!path.startsWith('/'))
           path='/'+path
-        let url = host + path;
+        let url = item.host + path;
         let header=JSON.parse(item[headerKey])
         let ctx = new ContextV1(url, method, objectToMap(header),body, service, regionId);
         let signer = new Signer(ctx, credentials);
@@ -76,11 +78,12 @@ describe(catePath, function() {
   });
 
 describe(cateQuery, function() {
-   let path = host + "/v1/regions/cn-north-1/instances";
+
    for(let key in utList[cateQuery])
    {
      it(key,function () {
        let item=utList[cateQuery][key]
+       let path = item.host + item.path
        let query =item.query
        if(query.toLowerCase().includes('maps'))
        {
@@ -104,7 +107,7 @@ describe(cateQuery, function() {
 })
 
 describe(cateHeader, function() {
-  let path = host + "/v1/regions/cn-north-1/instances";
+
   for(let key in utList[cateHeader])
   {
     it(key,function () {
@@ -113,7 +116,7 @@ describe(cateHeader, function() {
 
       let header =JSON.parse(headerString)
 
-      let url = path
+      let url = item.host +  item.path
       let ctx = new ContextV1(url, method, objectToMap(header),body, service, regionId);
       let signer = new Signer(ctx, credentials);
       let token=signer.sign(dateTime)
@@ -121,5 +124,24 @@ describe(cateHeader, function() {
     })
   }
 })
+describe(cateIntegration, function() {
 
+  for(let key in utList[cateIntegration])
+  {
+    it(key,function () {
+      let item=utList[cateIntegration][key]
+      let headerString=item['默认header']
+
+      let header =JSON.parse(headerString)
+
+      let url =  item.host + item.path+item.query
+      console.log(item)
+      let ctx = new ContextV1(url, item.method, objectToMap(header),item.Body, item.serviceName, item.regionId);
+
+      let signer = new Signer(ctx, credentials);
+      let token=signer.sign(dateTime)
+      assert.ok(token===item[Authorization_Key]);
+    })
+  }
+})
 
