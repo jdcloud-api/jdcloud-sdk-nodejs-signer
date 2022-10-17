@@ -1,9 +1,9 @@
 var util = {
   isBrowser: function isBrowser () {
-    return process && process.browser
+    return (typeof process !== 'object')
   },
   isNode: function isNode () {
-    return !util.isBrowser()
+    return (typeof process === 'object' && process.title === 'node')
   },
   uriEscape: function uriEscape (string) {
     var output = encodeURIComponent(string)
